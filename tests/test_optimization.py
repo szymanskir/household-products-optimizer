@@ -23,7 +23,7 @@ from src.exceptions import TooLargeOrderException
         (
             [
                 HouseholdProduct(name="expensive", price=1000),
-                HouseholdProduct(name="cheap", price=1000),
+                HouseholdProduct(name="cheap", price=100),
             ],
             1088,
         ),
@@ -55,7 +55,7 @@ from src.exceptions import TooLargeOrderException
                 HouseholdProduct(name="mid-expensive", price=10000),
                 HouseholdProduct(name="expensive", price=100000),
             ],
-            11101,
+            111101,
         ),
     ],
 )
@@ -71,6 +71,7 @@ def test_order_price_evaluation_throws_exception_for_too_large_orders():
             HouseholdProduct(name="just-mid", price=1000),
             HouseholdProduct(name="mid-expensive", price=10000),
             HouseholdProduct(name="expensive", price=100000),
+            HouseholdProduct(name="extra-product", price=100000),
     ]
 
     with pytest.raises(TooLargeOrderException):
