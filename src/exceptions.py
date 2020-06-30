@@ -1,0 +1,2 @@
+class TooLargeOrderException(Exception):
+    pass
