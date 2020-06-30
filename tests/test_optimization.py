@@ -3,7 +3,7 @@ import pytest
 from typing import List
 from src.household_product import HouseholdProduct
 from src.optimization import evaluate_order_price
-from src.exceptions import TooLargeOrderException
+from src.exceptions import IncorectOrderSizeException
 
 
 @pytest.mark.parametrize(
@@ -74,5 +74,13 @@ def test_order_price_evaluation_throws_exception_for_too_large_orders():
             HouseholdProduct(name="extra-product", price=100000),
     ]
 
-    with pytest.raises(TooLargeOrderException):
+    with pytest.raises(IncorectOrderSizeException):
+        evaluate_order_price(products)
+
+
+def test_order_price_evaluation_throws_exception_for_too_small_orders():
+    products = [
+    ]
+
+    with pytest.raises(IncorectOrderSizeException):
         evaluate_order_price(products)

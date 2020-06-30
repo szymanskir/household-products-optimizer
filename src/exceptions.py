@@ -1,2 +1,2 @@
-class TooLargeOrderException(Exception):
+class IncorectOrderSizeException(Exception):
     pass

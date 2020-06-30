@@ -1,13 +1,13 @@
 from typing import List
 from .household_product import HouseholdProduct
-from .exceptions import TooLargeOrderException
+from .exceptions import IncorectOrderSizeException
 
 
 def evaluate_order_price(products: List[HouseholdProduct]) -> float:
     item_number = len(products)
 
     if item_number > 5 or item_number < 1:
-        raise TooLargeOrderException
+        raise IncorectOrderSizeException
 
     def get_discounted_price(price: float, item_number: int):
         discount_price = {
