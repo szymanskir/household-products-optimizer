@@ -1,6 +1,7 @@
 import pytest
 
 from typing import List
+from scipy.special import binom
 from src.household_product import HouseholdProduct
 from src.optimization import evaluate_order_price, get_product_list_from_order_code, get_all_orders_sets_prices
 from src.exceptions import IncorectOrderSizeException
@@ -128,5 +129,22 @@ def test_get_all_orders_sets_prices():
     }
 
     result = get_all_orders_sets_prices(products)
+
+    assert result == expected_result
+
+
+def test__get_all_orders_sets_prices_filters_out_too_large_orders():
+    products = [
+        HouseholdProduct(name="cheap", price=10),
+        HouseholdProduct(name="mid-cheap", price=100),
+        HouseholdProduct(name="just-mid", price=1000),
+        HouseholdProduct(name="mid-expensive", price=10000),
+        HouseholdProduct(name="expensive", price=100000),
+        HouseholdProduct(name="extra-product", price=100000),
+    ]
+
+    expected_result = sum([binom(6, i) for i in range(1, 6)])
+
+    result = len(get_all_orders_sets_prices(products))
 
     assert result == expected_result
