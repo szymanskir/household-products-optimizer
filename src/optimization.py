@@ -1,5 +1,5 @@
 import numpy as np
-from typing import List
+from typing import List, Dict
 from itertools import product
 from .household_product import HouseholdProduct
 from .exceptions import IncorectOrderSizeException
@@ -22,13 +22,13 @@ def evaluate_order_price(products: List[HouseholdProduct]) -> float:
 
         return discount_price[item_number]
 
-    sorted_products = sorted(products, key=lambda product: product.price, reverse=True)
-    cheapest_product = sorted_products[-1]
-    sorted_products[-1].price = get_discounted_price(
-        cheapest_product.price, item_number
+    sorted_products_prices = sorted([product.price for product in products], reverse=True)
+    sorted_products_prices[-1] = get_discounted_price(
+        sorted_products_prices[-1], item_number
     )
 
-    return sum([product.price for product in sorted_products])
+    return sum(sorted_products_prices)
+
 
 def get_product_list_from_order_code(products: List[HouseholdProduct], order_codes) -> List[HouseholdProduct]:
     indices = np.array(order_codes) == 1
@@ -37,7 +37,8 @@ def get_product_list_from_order_code(products: List[HouseholdProduct], order_cod
 
     return selected_products.tolist()
 
-def get_all_orders_sets_prices(products: List[HouseholdProduct], max_order_size: int) -> List[List[HouseholdProduct]]:
+
+def get_all_orders_sets_prices(products: List[HouseholdProduct]) -> Dict[List[int], float]:
     products_count: int = len(products)
     orders_codes = product([0, 1], repeat=products_count)
 
@@ -49,9 +50,6 @@ def get_all_orders_sets_prices(products: List[HouseholdProduct], max_order_size:
 
         return result
 
-    return {order_code: evaluate_order_price_wrapper(get_product_list_from_order_code(products, order_code)) for order_code in orders_codes}
-
-
-
-
-
+    result = {order_code: evaluate_order_price_wrapper(get_product_list_from_order_code(products, order_code))
+              for order_code in orders_codes}
+    return {order_code: price for order_code, price in result.items() if price is not None}

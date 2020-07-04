@@ -2,7 +2,7 @@ import pytest
 
 from typing import List
 from src.household_product import HouseholdProduct
-from src.optimization import evaluate_order_price, get_product_list_from_order_code
+from src.optimization import evaluate_order_price, get_product_list_from_order_code, get_all_orders_sets_prices
 from src.exceptions import IncorectOrderSizeException
 
 
@@ -98,7 +98,6 @@ def test_get_product_list_from_order_code():
 
     order_code = (1, 0, 0, 1, 1, 1)
 
-
     result = get_product_list_from_order_code(products, order_code)
 
     expected_result = [
@@ -108,4 +107,26 @@ def test_get_product_list_from_order_code():
         HouseholdProduct(name="extra-product", price=100000),
     ]
 
-    assert  result == expected_result
+    assert result == expected_result
+
+
+def test_get_all_orders_sets_prices():
+    products = [
+        HouseholdProduct(name="cheap", price=10),
+        HouseholdProduct(name="mid-cheap", price=100),
+        HouseholdProduct(name="just-mid", price=1000),
+    ]
+
+    expected_result = {
+        (0, 0, 1): 1000,
+        (0, 1, 0): 100,
+        (0, 1, 1): 1088,
+        (1, 0, 0): 10,
+        (1, 0, 1): 1008.8,
+        (1, 1, 0): 108.8,
+        (1, 1, 1): 1106.6
+    }
+
+    result = get_all_orders_sets_prices(products)
+
+    assert result == expected_result
