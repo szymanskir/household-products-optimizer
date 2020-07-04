@@ -3,7 +3,8 @@ import pytest
 from typing import List
 from scipy.special import binom
 from src.household_product import HouseholdProduct
-from src.optimization import evaluate_order_price, get_product_list_from_order_code, get_all_orders_sets_prices
+from src.optimization import evaluate_order_price, get_product_list_from_order_code, get_all_orders_sets_prices, \
+    get_best_orders_set
 from src.exceptions import IncorectOrderSizeException
 
 
@@ -148,3 +149,44 @@ def test__get_all_orders_sets_prices_filters_out_too_large_orders():
     result = len(get_all_orders_sets_prices(products))
 
     assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "products, expected_orders_set",
+    [
+        (
+            [
+                HouseholdProduct(name="cheap", price=10),
+                HouseholdProduct(name="mid-cheap", price=100),
+                HouseholdProduct(name="just-mid", price=1000),
+            ],
+            [
+                [
+                    HouseholdProduct(name="mid-cheap", price=100),
+                    HouseholdProduct(name="just-mid", price=1000),
+                ],
+                [
+                    HouseholdProduct(name="cheap", price=10),
+                ],
+            ],
+        ),
+        (
+            [
+                HouseholdProduct(name="mid-cheap", price=100),
+                HouseholdProduct(name="mid-cheap-2", price=100),
+                HouseholdProduct(name="just-mid", price=1000),
+            ],
+            [
+                [
+                    HouseholdProduct(name="mid-cheap", price=100),
+                    HouseholdProduct(name="mid-cheap-2", price=100),
+                    HouseholdProduct(name="just-mid", price=1000),
+                ],
+            ],
+        ),
+    ]
+)
+def test_get_best_orders_set(products: List[HouseholdProduct], expected_orders_set: List[List[HouseholdProduct]]):
+    result = get_best_orders_set(products)
+
+    assert result == expected_orders_set
