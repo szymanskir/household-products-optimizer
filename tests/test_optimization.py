@@ -1,6 +1,6 @@
 import pytest
 
-from typing import List
+from typing import List, Tuple
 from scipy.special import binom
 
 from src.evaluation import evaluate_order_price_example
@@ -73,7 +73,7 @@ def test__get_all_orders_sets_prices_filters_out_too_large_orders():
 
 
 @pytest.mark.parametrize(
-    "products, expected_orders_set",
+    "products, expected_result",
     [
         (
             [
@@ -81,15 +81,18 @@ def test__get_all_orders_sets_prices_filters_out_too_large_orders():
                 HouseholdProduct(name="mid-cheap", price=100),
                 HouseholdProduct(name="just-mid", price=1000),
             ],
-            [
+            (
                 [
-                    HouseholdProduct(name="mid-cheap", price=100),
-                    HouseholdProduct(name="just-mid", price=1000),
+                    [
+                        HouseholdProduct(name="mid-cheap", price=100),
+                        HouseholdProduct(name="just-mid", price=1000),
+                    ],
+                    [
+                        HouseholdProduct(name="cheap", price=10),
+                    ],
                 ],
-                [
-                    HouseholdProduct(name="cheap", price=10),
-                ],
-            ],
+                12
+            ),
         ),
         (
             [
@@ -97,17 +100,20 @@ def test__get_all_orders_sets_prices_filters_out_too_large_orders():
                 HouseholdProduct(name="mid-cheap-2", price=100),
                 HouseholdProduct(name="just-mid", price=1000),
             ],
-            [
+            (
                 [
-                    HouseholdProduct(name="mid-cheap", price=100),
-                    HouseholdProduct(name="mid-cheap-2", price=100),
-                    HouseholdProduct(name="just-mid", price=1000),
+                    [
+                        HouseholdProduct(name="mid-cheap", price=100),
+                        HouseholdProduct(name="mid-cheap-2", price=100),
+                        HouseholdProduct(name="just-mid", price=1000),
+                    ],
                 ],
-            ],
+                34
+            ),
         ),
     ]
 )
-def test_get_best_orders_set(products: List[HouseholdProduct], expected_orders_set: List[List[HouseholdProduct]]):
+def test_get_best_orders_set(products: List[HouseholdProduct], expected_result: Tuple[List[List[HouseholdProduct]], float]):
     result = get_best_orders_set(products, evaluate_order_price_example)
 
-    assert result == expected_orders_set
+    assert result == expected_result
